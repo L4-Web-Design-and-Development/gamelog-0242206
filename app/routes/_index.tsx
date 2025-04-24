@@ -11,11 +11,11 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader() {
-  const prisma = new PrismaClient();
+  const prisma = new PrismaClient()
 
-  const games = await prisma.game.findMany();
+  const games = await prisma.game.findMany()
 
-  return json({ games });
+  return json({ games })
 }
 
 export default function Index() {
@@ -24,9 +24,9 @@ export default function Index() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div>
-        <h1 className="text-4xl font-bold">
-          <h1 className="text-4xl font-bold">Hello, World!</h1>
-        </h1>
+        
+        <h1 className="text-4xl font-bold">Hello, World!</h1>
+        
         {games.map((game) => (
           <div key={game.id}>
             <h2>{game.title}</h2>
