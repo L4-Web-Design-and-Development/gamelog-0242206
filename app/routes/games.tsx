@@ -1,7 +1,7 @@
-export default function AddGame() {
+export default function Games() {
     return (
     <div className="container mx-auto">
-        <h1>Add Game</h1>
+        <h1>Games</h1>
     </div>
   );
 }

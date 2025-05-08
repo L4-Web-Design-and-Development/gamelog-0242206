@@ -2,15 +2,22 @@ import { PrismaClient } from "@prisma/client";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/node";
-import GradientText from "~/components/GradientText";
-import Footer from "~/components/Footer";
 import GameCard from "~/components/GameCard";
 
+// Import local images
+import zeldaImg from "~/assets/png/zelda.png";
+import defaultImg from "~/assets/svg/gamelog-logo.svg";
+import TheWitcher3Img from "~/assets/png/The witcher 3.png";
 export const meta: MetaFunction = () => {
   return [
     { title: "GameLog" },
     { name: "description", content: "Track your game collection" },
   ];
+};
+
+const localImages: Record<string, string> = {
+  "The Legend of Zelda: Breath of the Wild": zeldaImg,
+  "The Witcher 3: Wild Hunt":TheWitcher3Img,
 };
 
 export async function loader() {
@@ -19,14 +26,13 @@ export async function loader() {
     select: {
       id: true,
       title: true,
-      genre: true, // Now valid
+      genre: true,
       imageUrl: true,
       releaseDate: true,
-    }
+    },
   });
   return json({ games });
 }
-
 
 export default function Index() {
   const { games } = useLoaderData<typeof loader>();
@@ -48,17 +54,21 @@ export default function Index() {
 
           {games.length > 0 ? (
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-              {games.map((game) => (
-                <GameCard
-                key={game.id}
-                image={game.imageUrl}
-                title={game.title}
-                genre={game.genre || "Uncategorized"} 
-                date={new Date(game.releaseDate).toLocaleDateString()}
-                onEdit={() => console.log("Edit", game.id)}
-                onDelete={() => console.log("Delete", game.id)}
-              />
-              ))}
+            {games.map((game) => {
+              const image = localImages[game.title] || game.imageUrl || defaultImg;
+
+                return (
+                  <GameCard
+                    key={game.id}
+                    image={image}
+                    title={game.title}
+                    genre={game.genre || "Uncategorized"}
+                    date={new Date(game.releaseDate).toLocaleDateString()}
+                    onView={() => console.log("View", game.id)}
+                    onDelete={() => console.log("Delete", game.id)}
+                  />
+                );
+              })}
             </div>
           ) : (
             <p className="text-center text-gray-400 mt-16">
@@ -67,8 +77,6 @@ export default function Index() {
           )}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

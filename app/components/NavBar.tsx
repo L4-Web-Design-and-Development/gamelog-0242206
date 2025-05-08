@@ -11,6 +11,7 @@ export default function Navbar() {
       </div>
 
       <div className="flex items-center gap-8">
+        <Link to="/add-game">Add Games</Link>
         <Link to="/games">Games</Link>
         <Link to="/about">About</Link>
         <Link to="/blog">Blog</Link>
