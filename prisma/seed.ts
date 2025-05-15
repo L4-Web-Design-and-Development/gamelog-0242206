@@ -1,3 +1,4 @@
+import { imageUrl } from "@cloudinary/url-gen/qualifiers/source";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -10,7 +11,7 @@ async function seed() {
       price: 59.99,
       rating: 4.9,
       releaseDate: new Date("2017-03-03"),
-      imageUrl: "https://assets.nintendo.com/image/upload/ar_16:9,c_lpad,w_1240/b_white/f_auto/q_auto/ncom/software/switch/70010000000025/7137262b5a64d921e193653f8aa0b722925abc5680380ca0e18a5cfd91697f58",
+      imageUrl: "https://res.cloudinary.com/djmlrjvf7/image/upload/v1747298963/7137262b5a64d921e193653f8aa0b722925abc5680380ca0e18a5cfd91697f58_jbiic5.avif",
     },
     {
       title: "The Witcher 3: Wild Hunt",
@@ -19,6 +20,7 @@ async function seed() {
       price: 39.99,
       rating: 4.8,
       releaseDate: new Date("2015-05-19"),
+      imageUrl: "https://res.cloudinary.com/djmlrjvf7/image/upload/v1747299359/hq720_lsfbuq.jpg"
     },
     {
       title: "Red Dead Redemption 2",
@@ -26,6 +28,7 @@ async function seed() {
       price: 59.99,
       rating: 4.7,
       releaseDate: new Date("2018-10-26"),
+      imageUrl: "https://res.cloudinary.com/djmlrjvf7/image/upload/v1747299499/download_1_rwaaof.jpg"
     },
     {
       title: "God of War",
@@ -33,6 +36,7 @@ async function seed() {
       price: 49.99,
       rating: 4.9,
       releaseDate: new Date("2018-04-20"),
+      imageUrl: "https://res.cloudinary.com/djmlrjvf7/image/upload/v1747299937/download_2_ibobe6.jpg"
     },
     {
       title: "Minecraft",
@@ -41,6 +45,7 @@ async function seed() {
       price: 26.95,
       rating: 4.8,
       releaseDate: new Date("2011-11-18"),
+      imageUrl: "https://res.cloudinary.com/djmlrjvf7/image/upload/v1747300195/download_3_mdsehb.jpg"
     },
     {
       title: "Fortnite",
@@ -49,6 +54,7 @@ async function seed() {
       price: 0.0,
       rating: 4.5,
       releaseDate: new Date("2017-07-25"),
+      imageUrl: "https://res.cloudinary.com/djmlrjvf7/image/upload/v1747300453/download_4_ngmbro.jpg"
     },
     {
       title: "Cyberpunk 2077",
@@ -56,6 +62,7 @@ async function seed() {
       price: 59.99,
       rating: 4.0,
       releaseDate: new Date("2020-12-10"),
+      imageUrl: "https://res.cloudinary.com/djmlrjvf7/image/upload/v1747300568/images_mm1vc5.jpg"
     },
     {
       title: "Among Us",
@@ -64,6 +71,7 @@ async function seed() {
       price: 4.99,
       rating: 4.4,
       releaseDate: new Date("2018-06-15"),
+      imageUrl: "https://res.cloudinary.com/djmlrjvf7/image/upload/v1747300654/download_5_uib0vg.jpg"
     },
     {
       title: "Animal Crossing: New Horizons",
@@ -72,6 +80,7 @@ async function seed() {
       price: 59.99,
       rating: 4.9,
       releaseDate: new Date("2020-03-20"),
+      imageUrl:"https://res.cloudinary.com/djmlrjvf7/image/upload/v1747300757/9989957eae3a6b545194c42fec2071675c34aadacd65e6b33fdfe7b3b6a86c3a_oxvyjw.avif"
     },
     {
       title: "Hades",
@@ -80,6 +89,7 @@ async function seed() {
       price: 24.99,
       rating: 4.9,
       releaseDate: new Date("2020-09-17"),
+      imageUrl: "https://res.cloudinary.com/djmlrjvf7/image/upload/v1747300835/download_6_rspa34.jpg"
     },
   ];
 
@@ -134,8 +144,8 @@ async function seed() {
     },
   ];
 
-  for (const category of categories) {
-    await prisma.category.create({ data: category });
+  for (const games of categories) {
+    await prisma.category.create({ data: games });
   }
 
   console.log("🎮 Categories created successfully");

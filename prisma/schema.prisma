@@ -16,7 +16,6 @@ model Game {
   description String
   price       Float
   rating      Float
-  genre       String?
   imageUrl    String?
   releaseDate DateTime
   createdAt   DateTime @default(now())

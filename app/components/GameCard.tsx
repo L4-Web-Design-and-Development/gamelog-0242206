@@ -1,7 +1,7 @@
-import gameLogLogo from "~/assets/svg/gamelog-logo.svg";
+
 
 interface GameCardProps {
-  image: string;
+  imageUrl: string;
   title: string;
   genre: string;
   date: string;
@@ -10,7 +10,7 @@ interface GameCardProps {
 }
 
 export default function GameCard({
-  image,
+  imageUrl,
   title,
   genre,
   date,
@@ -18,35 +18,31 @@ export default function GameCard({
   onDelete,
 }: GameCardProps) {
   return (
-    <div className="relative w-full max-w-xl h-64 rounded-2xl shadow-lg overflow-hidden group bg-gray-900">
+    <div className="bg-[#071212] rounded-2xl w-72 overflow-hidden shadow-md flex flex-col">
       {/* Image */}
       <img
-        src={image || gameLogLogo}
-        alt={title}
-        className="absolute inset-0 w-full h-full object-cover"
+        src={imageUrl}
+        alt={`${title} cover`}
+        className="w-full h-40 object-cover"
       />
 
-      {/* Overlay for contrast */}
-      <div className="absolute inset-0 bg-black bg-opacity-60 group-hover:bg-opacity-40 transition duration-300"></div>
-
       {/* Content */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 z-10 flex flex-col justify-end h-full text-white">
-        <div className="mb-auto">
-          <h3 className="text-lg font-semibold">{title}</h3>
-          <p className="text-teal-400 text-xs">{genre}</p>
-          <p className="text-gray-300 text-xs">{date}</p>
-        </div>
+      <div className="p-4 text-white">
+        <h3 className="text-lg font-semibold leading-tight">{title}</h3>
+        <p className="text-teal-400 text-sm mt-1">{genre}</p>
+        <p className="text-gray-400 text-sm mb-3">{date}</p>
 
-        <div className="flex gap-2 justify-end mt-4">
+        {/* Buttons closer to text */}
+        <div className="flex flex-col gap-2 items-end">
           <button
             onClick={onView}
-            className="border border-teal-400 text-teal-400 rounded px-3 py-1 text-xs hover:bg-teal-700/40 transition"
+            className="w-24 border border-teal-400 text-teal-400 rounded px-4 py-1 text-xs hover:bg-teal-900 transition"
           >
-            View
+            Edit
           </button>
           <button
             onClick={onDelete}
-            className="border border-red-400 text-red-400 rounded px-3 py-1 text-xs hover:bg-red-700/40 transition"
+            className="w-24 border border-red-400 text-red-400 rounded px-4 py-1 text-xs hover:bg-red-900 transition"
           >
             Delete
           </button>
