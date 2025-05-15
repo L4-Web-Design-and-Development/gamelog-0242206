@@ -1,34 +1,25 @@
 import { PrismaClient } from "@prisma/client";
-import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import type { MetaFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData, Form } from "@remix-run/react";
+import type { MetaFunction, ActionFunction } from "@remix-run/node";
 import GameCard from "~/components/GameCard";
 
-// Import local images
 import zeldaImg from "~/assets/png/zelda.png";
-// Import other local images here, e.g.:
-// import witcherImg from "~/assets/png/witcher.png";
-// import minecraftImg from "~/assets/png/minecraft.png";
-
 import defaultImg from "~/assets/svg/gamelog-logo.svg";
 
-// Map game titles to local images
 const localImages: Record<string, string> = {
   "The Legend of Zelda: Breath of the Wild": zeldaImg,
-  // Add other mappings here, e.g.:
-  // "The Witcher 3: Wild Hunt": witcherImg,
-  // "Minecraft": minecraftImg,
+  // Add other mappings here
 };
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "GameLog" },
-    { name: "description", content: "Track your game collection" },
-  ];
-};
+export const meta: MetaFunction = () => [
+  { title: "GameLog" },
+  { name: "description", content: "Track your game collection" },
+];
+
+const prisma = new PrismaClient();
 
 export async function loader() {
-  const prisma = new PrismaClient();
   const games = await prisma.game.findMany({
     select: {
       id: true,
@@ -44,6 +35,16 @@ export async function loader() {
   });
   return json({ games });
 }
+
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const gameId = formData.get("gameId");
+  if (typeof gameId !== "string") {
+    throw new Response("Invalid game ID", { status: 400 });
+  }
+  await prisma.game.delete({ where: { id: gameId } });
+  return redirect("/");
+};
 
 export default function Index() {
   const { games } = useLoaderData<typeof loader>();
@@ -66,8 +67,8 @@ export default function Index() {
           {games.length > 0 ? (
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {games.map((game) => {
-                // Use local image if available, else fallback to imageUrl or default image
-                const imageUrl = localImages[game.title] || game.imageUrl || defaultImg;
+                const imageUrl =
+                  localImages[game.title] || game.imageUrl || defaultImg;
 
                 return (
                   <GameCard
@@ -77,15 +78,35 @@ export default function Index() {
                     genre={game.category?.title || "Uncategorized"}
                     date={new Date(game.releaseDate).toLocaleDateString()}
                     onView={() => console.log("View", game.id)}
-                    onDelete={() => console.log("Delete", game.id)}
+                    // Remove onDelete prop, use deleteForm below
+                    deleteForm={
+                      <Form
+                        method="post"
+                        onSubmit={(e) => {
+                          if (
+                            !confirm(
+                              `Are you sure you want to delete "${game.title}"?`
+                            )
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
+                      >
+                        <input type="hidden" name="gameId" value={game.id} />
+                        <button
+                          type="submit"
+                          className="w-24 border border-red-400 text-red-400 rounded px-4 py-1 text-xs hover:bg-red-900 transition"
+                        >
+                          Delete
+                        </button>
+                      </Form>
+                    }
                   />
                 );
               })}
             </div>
           ) : (
-            <p className="text-center text-gray-400 mt-16">
-              No games added yet
-            </p>
+            <p className="text-center text-gray-400 mt-16">No games added yet</p>
           )}
         </div>
       </div>

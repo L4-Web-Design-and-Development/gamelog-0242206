@@ -1,12 +1,10 @@
-
-
 interface GameCardProps {
   imageUrl: string;
   title: string;
   genre: string;
   date: string;
   onView: () => void;
-  onDelete: () => void;
+  deleteForm?: React.ReactNode; // new prop for delete form/button
 }
 
 export default function GameCard({
@@ -15,24 +13,19 @@ export default function GameCard({
   genre,
   date,
   onView,
-  onDelete,
+  deleteForm,
 }: GameCardProps) {
   return (
     <div className="bg-[#071212] rounded-2xl w-72 overflow-hidden shadow-md flex flex-col">
-      {/* Image */}
       <img
         src={imageUrl}
         alt={`${title} cover`}
         className="w-full h-40 object-cover"
       />
-
-      {/* Content */}
       <div className="p-4 text-white">
         <h3 className="text-lg font-semibold leading-tight">{title}</h3>
         <p className="text-teal-400 text-sm mt-1">{genre}</p>
         <p className="text-gray-400 text-sm mb-3">{date}</p>
-
-        {/* Buttons closer to text */}
         <div className="flex flex-col gap-2 items-end">
           <button
             onClick={onView}
@@ -40,12 +33,7 @@ export default function GameCard({
           >
             Edit
           </button>
-          <button
-            onClick={onDelete}
-            className="w-24 border border-red-400 text-red-400 rounded px-4 py-1 text-xs hover:bg-red-900 transition"
-          >
-            Delete
-          </button>
+          {deleteForm}
         </div>
       </div>
     </div>
