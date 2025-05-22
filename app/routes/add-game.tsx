@@ -1,49 +1,74 @@
-import { useState } from "react";
-import { Form, Link, useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
-import type { ActionFunctionArgs } from "@remix-run/node";
+import { useLoaderData, Form, Link } from "@remix-run/react";
 import { PrismaClient } from "@prisma/client";
+import { useState } from "react";
 import ImageUploader from "~/components/ImageUploader";
 
-export async function loader() {
+export const loader = async () => {
   const prisma = new PrismaClient();
   const categories = await prisma.category.findMany({
     select: { id: true, title: true },
     orderBy: { title: "asc" },
   });
   await prisma.$disconnect();
-
   return json({ categories });
-}
+};
 
-export async function action({ request }: ActionFunctionArgs) {
+export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();
-  const title = formData.get("title") as string;
-  const description = formData.get("description") as string;
-  const price = parseFloat(formData.get("price") as string);
-  const rating = parseFloat(formData.get("rating") as string);
-  const releaseDate = new Date(formData.get("releaseDate") as string);
-  const imageUrl = formData.get("imageUrl") as string;
-  const categoryId = formData.get("categoryId") as string;
+
+  const title = formData.get("title");
+  const description = formData.get("description");
+  const priceStr = formData.get("price");
+  const ratingStr = formData.get("rating");
+  const releaseDateStr = formData.get("releaseDate");
+  const imageUrl = formData.get("imageUrl");
+  const categoryId = formData.get("categoryId");
+
+  if (
+    typeof title !== "string" ||
+    typeof description !== "string" ||
+    typeof priceStr !== "string" ||
+    typeof ratingStr !== "string" ||
+    typeof releaseDateStr !== "string" ||
+    typeof imageUrl !== "string" ||
+    typeof categoryId !== "string"
+  ) {
+    throw new Response("Invalid form data", { status: 400 });
+  }
+
+  const price = parseFloat(priceStr);
+  const rating = parseFloat(ratingStr);
+
+  if (isNaN(price) || isNaN(rating)) {
+    throw new Response("Price and rating must be valid numbers", { status: 400 });
+  }
+
+  const releaseDate = new Date(releaseDateStr);
+  if (isNaN(releaseDate.getTime())) {
+    throw new Response("Invalid release date", { status: 400 });
+  }
 
   const prisma = new PrismaClient();
 
-  await prisma.game.create({
-    data: {
-      title,
-      description,
-      price,
-      rating,
-      releaseDate,
-      imageUrl,
-      categoryId,
-    },
-  });
-
-  await prisma.$disconnect();
+  try {
+    await prisma.game.create({
+      data: {
+        title,
+        description,
+        price,
+        rating,
+        releaseDate,
+        imageUrl,
+        categoryId,
+      },
+    });
+  } finally {
+    await prisma.$disconnect();
+  }
 
   return redirect("/");
-}
+};
 
 export default function AddGame() {
   const { categories } = useLoaderData<typeof loader>();
@@ -57,10 +82,8 @@ export default function AddGame() {
 
       <div className="max-w-2xl mx-auto bg-black p-8 rounded-xl shadow-lg">
         <Form method="post" className="space-y-6" encType="multipart/form-data">
-          {/* Hidden input for image URL */}
           <input type="hidden" name="imageUrl" value={imageUrl} />
 
-          {/* Title */}
           <div>
             <label
               htmlFor="title"
@@ -78,7 +101,6 @@ export default function AddGame() {
             />
           </div>
 
-          {/* Description */}
           <div>
             <label
               htmlFor="description"
@@ -96,14 +118,13 @@ export default function AddGame() {
             />
           </div>
 
-          {/* Image uploader */}
           <div className="mb-4">
             <ImageUploader onUpload={(url) => setImageUrl(url)} />
           </div>
 
-          {/* Preview uploaded image */}
+          {/* Add key to conditional preview container */}
           {imageUrl && (
-            <div className="mb-6">
+            <div key="preview-image" className="mb-6">
               <label className="block mb-2 text-gray-300 font-medium">
                 Preview Image
               </label>
@@ -115,7 +136,6 @@ export default function AddGame() {
             </div>
           )}
 
-          {/* Price and Rating */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label
@@ -157,7 +177,6 @@ export default function AddGame() {
             </div>
           </div>
 
-          {/* Release Date */}
           <div>
             <label
               htmlFor="releaseDate"
@@ -174,7 +193,6 @@ export default function AddGame() {
             />
           </div>
 
-          {/* Category */}
           <div>
             <label
               htmlFor="categoryId"
@@ -188,7 +206,9 @@ export default function AddGame() {
               required
               className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             >
-              <option value="">Select a category</option>
+              <option key="default-option" value="">
+                Select a category
+              </option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.title}
@@ -197,7 +217,6 @@ export default function AddGame() {
             </select>
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-16">
             <Link
               to="/"
