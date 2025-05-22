@@ -48,12 +48,6 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function AddGame() {
   const { categories } = useLoaderData<typeof loader>();
   const [imageUrl, setImageUrl] = useState("");
-  const [preview, setPreview] = useState<string | null>(null);
-
-  const handleImageUploaded = (url: string) => {
-    setImageUrl(url);
-    setPreview(url);
-  };
 
   return (
     <div className="container mx-auto py-20 px-4">
@@ -102,12 +96,24 @@ export default function AddGame() {
             />
           </div>
 
-
-
           {/* Image uploader */}
-          <div className="mb-8">
-            <ImageUploader onImageUploaded={handleImageUploaded} />
+          <div className="mb-4">
+            <ImageUploader onUpload={(url) => setImageUrl(url)} />
           </div>
+
+          {/* Preview uploaded image */}
+          {imageUrl && (
+            <div className="mb-6">
+              <label className="block mb-2 text-gray-300 font-medium">
+                Preview Image
+              </label>
+              <img
+                src={imageUrl}
+                alt="Preview"
+                className="w-full max-h-48 rounded object-contain border border-gray-700"
+              />
+            </div>
+          )}
 
           {/* Price and Rating */}
           <div className="grid grid-cols-2 gap-4">
