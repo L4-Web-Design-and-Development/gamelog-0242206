@@ -4,6 +4,8 @@ import { useLoaderData } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/node";
 import GameCard from "~/components/GameCard";
 
+// You can use a local image or a placeholder as your default image
+const defaultImg = "https://via.placeholder.com/300x200?text=No+Image";
 
 export const meta: MetaFunction = () => {
   return [
@@ -50,8 +52,8 @@ export default function Index() {
           {games.length > 0 ? (
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {games.map((game) => {
-                // Use local image if available, else fallback to imageUrl or default image
-                const imageUrl = localImages[game.title] || game.imageUrl || defaultImg;
+                // Use imageUrl if available, else fallback to default image
+                const imageUrl = game.imageUrl ?? defaultImg;
 
                 return (
                   <GameCard

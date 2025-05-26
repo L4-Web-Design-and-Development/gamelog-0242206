@@ -29,18 +29,16 @@ import {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
   
-    const uploadResult = await new Promise<cloudinary.UploadApiResponse>(
-      (resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "gamelog" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result!);
-          }
-        );
-        stream.end(buffer);
-      }
-    );
+    const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "gamelog" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result as { secure_url: string });
+        }
+      );
+      stream.end(buffer);
+    });
   
     // Redirect or return the uploaded URL for use in your form
     return redirect(`/cloudinary-upload?uploadedUrl=${encodeURIComponent(uploadResult.secure_url)}`);

@@ -14,7 +14,9 @@ export async function action({ request }: { request: Request }) {
 
   try {
     const uploadHandler = unstable_composeUploadHandlers(
-      unstable_createMemoryUploadHandler()
+      unstable_createMemoryUploadHandler({
+        maxPartSize: 10_000_000, // 10MB
+      })
     );
     const formData = await unstable_parseMultipartFormData(request, uploadHandler);
     const file = formData.get("image");
