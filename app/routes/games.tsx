@@ -4,21 +4,6 @@ import { useLoaderData } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/node";
 import GameCard from "~/components/GameCard";
 
-// Import local images
-import zeldaImg from "~/assets/png/zelda.png";
-// Import other local images here, e.g.:
-// import witcherImg from "~/assets/png/witcher.png";
-// import minecraftImg from "~/assets/png/minecraft.png";
-
-import defaultImg from "~/assets/svg/gamelog-logo.svg";
-
-// Map game titles to local images
-const localImages: Record<string, string> = {
-  "The Legend of Zelda: Breath of the Wild": zeldaImg,
-  // Add other mappings here, e.g.:
-  // "The Witcher 3: Wild Hunt": witcherImg,
-  // "Minecraft": minecraftImg,
-};
 
 export const meta: MetaFunction = () => {
   return [

@@ -1,24 +1,45 @@
-// app/routes/api.upload.ts
-import type { ActionFunction } from "@remix-run/node";
-import { writeFile } from "fs/promises";
-import path from "path";
+import { json, unstable_parseMultipartFormData, unstable_composeUploadHandlers, unstable_createMemoryUploadHandler } from "@remix-run/node";
+import { v2 as cloudinary } from "cloudinary";
 
-export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const file = formData.get("file") as File;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
 
-  if (!file || typeof file === "string") {
-    return new Response("Invalid file", { status: 400 });
+export async function action({ request }: { request: Request }) {
+  if (request.method !== "POST") {
+    return json({ error: "Method not allowed" }, { status: 405 });
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
+  try {
+    const uploadHandler = unstable_composeUploadHandlers(
+      unstable_createMemoryUploadHandler()
+    );
+    const formData = await unstable_parseMultipartFormData(request, uploadHandler);
+    const file = formData.get("image");
 
-  const filePath = path.join(uploadsDir, file.name);
-  await writeFile(filePath, buffer);
+    if (!(file instanceof File)) {
+      return json({ error: "No image provided" }, { status: 400 });
+    }
 
-  const imageUrl = `/uploads/${file.name}`;
-  return new Response(JSON.stringify({ imageUrl }), {
-    headers: { "Content-Type": "application/json" },
-  });
-};
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const uploadResult = await new Promise<any>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "gamelog" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(buffer);
+    });
+
+    return json({ imageUrl: uploadResult.secure_url });
+  } catch (error) {
+    console.error("Upload error:", error);
+    return json({ error: "Failed to upload image" }, { status: 500 });
+  }
+}

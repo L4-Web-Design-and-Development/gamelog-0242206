@@ -18,10 +18,10 @@ export default function GameCard({
   return (
     <div className="bg-[#071212] rounded-2xl w-72 overflow-hidden shadow-md flex flex-col">
       <img
-        src={imageUrl}
-        alt={`${title} cover`}
-        className="w-full h-40 object-cover"
-      />
+  src={imageUrl}
+  alt={`${title} cover`}
+  className="w-full h-40 object-cover"
+/>
       <div className="p-4 text-white">
         <h3 className="text-lg font-semibold leading-tight">{title}</h3>
         <p className="text-teal-400 text-sm mt-1">{genre}</p>

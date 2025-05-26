@@ -1,15 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { json, redirect } from "@remix-run/node";
+import { json, redirect, type ActionFunction, type MetaFunction } from "@remix-run/node";
 import { useLoaderData, Form } from "@remix-run/react";
-import type { MetaFunction, ActionFunction } from "@remix-run/node";
 import GameCard from "~/components/GameCard";
 
-import zeldaImg from "~/assets/png/zelda.png";
-import defaultImg from "~/assets/svg/gamelog-logo.svg";
-
+// If you have local images, import them here. Otherwise, use a placeholder.
+const defaultImg = "https://via.placeholder.com/300x200?text=No+Image";
 const localImages: Record<string, string> = {
-  "The Legend of Zelda: Breath of the Wild": zeldaImg,
-  // Add other mappings here
+  // Example: "The Legend of Zelda: Breath of the Wild": zeldaImg,
+  // Add more mappings if you have local images
 };
 
 export const meta: MetaFunction = () => [
@@ -67,8 +65,10 @@ export default function Index() {
           {games.length > 0 ? (
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {games.map((game) => {
+                // Prefer uploaded image, then local, then default
+                console.log("Game imageUrl:", game.imageUrl);
                 const imageUrl =
-                  localImages[game.title] || game.imageUrl || defaultImg;
+                game.imageUrl || localImages[game.title] || defaultImg;
 
                 return (
                   <GameCard
@@ -78,7 +78,6 @@ export default function Index() {
                     genre={game.category?.title || "Uncategorized"}
                     date={new Date(game.releaseDate).toLocaleDateString()}
                     onView={() => console.log("View", game.id)}
-                    // Remove onDelete prop, use deleteForm below
                     deleteForm={
                       <Form
                         method="post"

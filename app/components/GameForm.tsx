@@ -1,21 +1,81 @@
 import { Form } from "@remix-run/react";
-import { useState } from "react";
 
-export default function GameForm({ categories }: { categories: { id: string; title: string }[] }) {
-  const [preview, setPreview] = useState<string | null>(null);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setPreview(URL.createObjectURL(file));
-    } else {
-      setPreview(null);
-    }
-  };
-
+export default function GameForm({
+  categories,
+  imageUrl,
+}: {
+  categories: { id: string; title: string }[];
+  imageUrl: string;
+}) {
   return (
     <Form method="post" encType="multipart/form-data" className="flex flex-col gap-6">
-      {/* Your form fields here, including category select */}
+      <div>
+        <label htmlFor="title" className="block mb-1 text-gray-300 font-medium">
+          Title
+        </label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          required
+          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          placeholder="Enter Game Title"
+        />
+      </div>
+      <div>
+        <label htmlFor="description" className="block mb-1 text-gray-300 font-medium">
+          Description
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          required
+          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          placeholder="Enter Game Description"
+        />
+      </div>
+      <div>
+        <label htmlFor="price" className="block mb-1 text-gray-300 font-medium">
+          Price
+        </label>
+        <input
+          type="number"
+          id="price"
+          name="price"
+          step="0.01"
+          required
+          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          placeholder="Enter Price"
+        />
+      </div>
+      <div>
+        <label htmlFor="rating" className="block mb-1 text-gray-300 font-medium">
+          Rating
+        </label>
+        <input
+          type="number"
+          id="rating"
+          name="rating"
+          step="0.1"
+          min="0"
+          max="10"
+          required
+          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          placeholder="Enter Rating (0-10)"
+        />
+      </div>
+      <div>
+        <label htmlFor="releaseDate" className="block mb-1 text-gray-300 font-medium">
+          Release Date
+        </label>
+        <input
+          type="date"
+          id="releaseDate"
+          name="releaseDate"
+          required
+          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+        />
+      </div>
       <div>
         <label htmlFor="categoryId" className="block mb-1 text-gray-300 font-medium">
           Category
@@ -34,41 +94,25 @@ export default function GameForm({ categories }: { categories: { id: string; tit
           ))}
         </select>
       </div>
-      {/* Rest of your form fields */}
-      {/* Image preview and upload */}
-      <div>
-        <label htmlFor="image" className="block mb-1 text-gray-300 font-medium">
-          Upload Game Image
-        </label>
+      {/* Show preview if imageUrl exists */}
+      {imageUrl && (
         <div className="w-full h-48 bg-black border border-gray-700 rounded flex items-center justify-center overflow-hidden">
-          {preview ? (
-            <img src={preview} alt="Preview" className="object-contain max-h-full max-w-full" />
-          ) : (
-            <span className="text-gray-500">No image selected</span>
-          )}
+          <img src={imageUrl} alt="Preview" className="object-contain max-h-full max-w-full" />
         </div>
-        <label className="inline-block mt-2 px-4 py-2 bg-gray-700 text-white rounded cursor-pointer hover:bg-gray-600">
-          Select Image
-          <input
-            id="image"
-            type="file"
-            name="image"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImageChange}
-          />
-        </label>
-      </div>
-      {/* Submit buttons */}
+      )}
+      {/* Hidden input to submit imageUrl */}
+      <input type="hidden" name="imageUrl" value={imageUrl} />
       <div className="flex justify-end gap-3 pt-4">
         <button
           type="reset"
           className="px-5 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white"
-          onClick={() => setPreview(null)}
         >
           Cancel
         </button>
-        <button type="submit" className="px-5 py-2 bg-teal-600 rounded hover:bg-teal-500 text-white">
+        <button
+          type="submit"
+          className="px-5 py-2 bg-teal-600 rounded hover:bg-teal-500 text-white"
+        >
           Submit
         </button>
       </div>

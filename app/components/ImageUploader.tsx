@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
 import { useFetcher } from "@remix-run/react";
+import { useRef } from "react";
 
 interface UploadResponse {
   imageUrl?: string;
@@ -11,87 +11,38 @@ interface ImageUploaderProps {
 }
 
 export default function ImageUploader({ onUpload }: ImageUploaderProps) {
-  const [preview, setPreview] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const fetcher = useFetcher<UploadResponse>();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!file) {
-      setPreview(null);
-      return;
-    }
-    const objectUrl = URL.createObjectURL(file);
-    setPreview(objectUrl);
-
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [file]);
-
-  const handleUpload = () => {
-    if (!file) return;
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("image", file);
-    fetcher.submit(formData, {
-      method: "post",
-      action: "/api/upload",
-      encType: "multipart/form-data",
-    });
-  };
-
-  useEffect(() => {
-    if (fetcher.data?.imageUrl) {
-      setIsUploading(false);
-      onUpload(fetcher.data.imageUrl);
-    }
-    if (fetcher.data?.error) {
-      setIsUploading(false);
-      alert(fetcher.data.error);
-    }
-  }, [fetcher.data, onUpload]);
+  // When upload is done, call onUpload with the image URL
+  if (fetcher.data?.imageUrl) {
+    onUpload(fetcher.data.imageUrl);
+    fetcher.data.imageUrl = undefined; // Prevent repeated calls
+  }
 
   return (
     <div>
-      <input
-        type="file"
-        accept="image/*"
+      <fetcher.Form
+        method="post"
+        action="/api/upload"
+        encType="multipart/form-data"
         onChange={(e) => {
-          if (e.target.files && e.target.files.length > 0) {
-            setFile(e.target.files[0]);
+          const fileInput = inputRef.current;
+          if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            fetcher.submit(e.currentTarget, { method: "post", encType: "multipart/form-data" });
           }
         }}
-        ref={fileInputRef}
-        style={{ display: "none" }}
-      />
-      <button
-        type="button"
-        onClick={() => fileInputRef.current?.click()}
-        className="bg-gray-700 text-white px-4 py-2 rounded-md mr-2"
       >
-        Select Image
-      </button>
-      <button
-        type="button"
-        onClick={handleUpload}
-        disabled={!file || isUploading}
-        className={`px-4 py-2 rounded-md ${
-          !file || isUploading
-            ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-            : "bg-cyan-600 text-white"
-        }`}
-      >
-        {isUploading ? "Uploading..." : "Upload"}
-      </button>
-
-      {preview && (
-        <img
-          key="image-preview"
-          src={preview}
-          alt="Preview"
-          className="mt-4 max-w-full rounded border border-gray-700"
+        <input
+          ref={inputRef}
+          type="file"
+          name="image"
+          accept="image/*"
+          className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100"
         />
-      )}
+      </fetcher.Form>
+      {fetcher.state === "submitting" && <p className="text-gray-400 text-sm mt-2">Uploading...</p>}
+      {fetcher.data?.error && <p className="text-red-400 text-sm mt-2">{fetcher.data.error}</p>}
     </div>
   );
 }
