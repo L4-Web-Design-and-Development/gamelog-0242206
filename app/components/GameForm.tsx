@@ -1,24 +1,57 @@
 import { Form } from "@remix-run/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 type Category = {
   id: string;
   title: string;
 };
 
+type Game = {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  rating: number;
+  releaseDate: string; // ISO string
+  imageUrl: string;
+  categoryId: string;
+};
+
 interface GameFormProps {
   categories: Category[];
+  initialGame?: Game;
 }
 
-export default function GameForm({ categories }: GameFormProps) {
-  const [imageUrl, setImageUrl] = useState("");
+export default function GameForm({ categories, initialGame }: GameFormProps) {
+  const [imageUrl, setImageUrl] = useState(initialGame?.imageUrl || "");
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(initialGame?.imageUrl || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Debug: log imageUrl whenever it changes
-  console.log("imageUrl in GameForm:", imageUrl);
+  // For controlled fields
+  const [title, setTitle] = useState(initialGame?.title || "");
+  const [description, setDescription] = useState(initialGame?.description || "");
+  const [price, setPrice] = useState(initialGame?.price?.toString() || "");
+  const [rating, setRating] = useState(initialGame?.rating?.toString() || "");
+  const [releaseDate, setReleaseDate] = useState(
+    initialGame?.releaseDate ? initialGame.releaseDate.slice(0, 10) : ""
+  );
+  const [categoryId, setCategoryId] = useState(initialGame?.categoryId || "");
+
+  // If initialGame changes (shouldn't, but for safety)
+  useEffect(() => {
+    if (initialGame) {
+      setImageUrl(initialGame.imageUrl || "");
+      setPreview(initialGame.imageUrl || null);
+      setTitle(initialGame.title || "");
+      setDescription(initialGame.description || "");
+      setPrice(initialGame.price?.toString() || "");
+      setRating(initialGame.rating?.toString() || "");
+      setReleaseDate(initialGame.releaseDate ? initialGame.releaseDate.slice(0, 10) : "");
+      setCategoryId(initialGame.categoryId || "");
+    }
+  }, [initialGame]);
 
   async function handleImageUpload() {
     const file = fileInputRef.current?.files?.[0];
@@ -57,7 +90,7 @@ export default function GameForm({ categories }: GameFormProps) {
       setPreview(URL.createObjectURL(file));
       setImageUrl(""); // Clear previous uploaded URL until upload is done
     } else {
-      setPreview(null);
+      setPreview(initialGame?.imageUrl || null);
     }
   }
 
@@ -71,10 +104,16 @@ export default function GameForm({ categories }: GameFormProps) {
   }
 
   function handleReset() {
-    setImageUrl("");
+    setImageUrl(initialGame?.imageUrl || "");
     setError("");
-    setPreview(null);
+    setPreview(initialGame?.imageUrl || null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+    setTitle(initialGame?.title || "");
+    setDescription(initialGame?.description || "");
+    setPrice(initialGame?.price?.toString() || "");
+    setRating(initialGame?.rating?.toString() || "");
+    setReleaseDate(initialGame?.releaseDate ? initialGame.releaseDate.slice(0, 10) : "");
+    setCategoryId(initialGame?.categoryId || "");
   }
 
   return (
@@ -132,6 +171,8 @@ export default function GameForm({ categories }: GameFormProps) {
             id="title"
             name="title"
             required
+            value={title}
+            onChange={e => setTitle(e.target.value)}
             className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="Enter Game Title"
           />
@@ -144,6 +185,8 @@ export default function GameForm({ categories }: GameFormProps) {
             id="description"
             name="description"
             required
+            value={description}
+            onChange={e => setDescription(e.target.value)}
             className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="Enter Game Description"
           />
@@ -158,6 +201,8 @@ export default function GameForm({ categories }: GameFormProps) {
             name="price"
             step="0.01"
             required
+            value={price}
+            onChange={e => setPrice(e.target.value)}
             className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="Enter Price"
           />
@@ -174,6 +219,8 @@ export default function GameForm({ categories }: GameFormProps) {
             min="0"
             max="10"
             required
+            value={rating}
+            onChange={e => setRating(e.target.value)}
             className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="Enter Rating (0-10)"
           />
@@ -187,6 +234,8 @@ export default function GameForm({ categories }: GameFormProps) {
             id="releaseDate"
             name="releaseDate"
             required
+            value={releaseDate}
+            onChange={e => setReleaseDate(e.target.value)}
             className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
           />
         </div>
@@ -198,6 +247,8 @@ export default function GameForm({ categories }: GameFormProps) {
             id="categoryId"
             name="categoryId"
             required
+            value={categoryId}
+            onChange={e => setCategoryId(e.target.value)}
             className="w-full rounded bg-black border border-gray-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
             <option value="">Please Select</option>

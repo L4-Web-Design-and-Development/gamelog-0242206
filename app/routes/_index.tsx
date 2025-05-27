@@ -46,7 +46,7 @@ export default function Index() {
   const { games } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#071212] text-gray-50">
+    <div className="flex flex-col min-h-screen bg-gray-950 text-gray-50">
       <div className="flex-1">
         <div className="container mx-auto py-8 px-6">
           <div className="flex justify-between items-center mb-6">
@@ -86,7 +86,7 @@ export default function Index() {
                       title={game.title}
                       genre={game.category?.title || "Uncategorized"}
                       date={new Date(game.releaseDate).toLocaleDateString()}
-                      onView={() => console.log("View", game.id)}
+                      id={game.id}
                       onDelete={() => {
                         // Find the closest form and submit it
                         const form = document.activeElement?.closest("form");

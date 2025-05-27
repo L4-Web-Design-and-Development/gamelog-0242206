@@ -62,8 +62,7 @@ export default function Index() {
                     title={game.title}
                     genre={game.category?.title || "Uncategorized"}
                     date={new Date(game.releaseDate).toLocaleDateString()}
-                    onView={() => console.log("View", game.id)}
-                    onDelete={() => console.log("Delete", game.id)}
+                    id={game.id}
                   />
                 );
               })}
