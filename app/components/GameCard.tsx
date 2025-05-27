@@ -19,13 +19,17 @@ export default function GameCard({
 }: GameCardProps) {
   return (
     <div className="bg-gray-950 rounded-2xl w-72 overflow-hidden shadow-md flex flex-col">
-      <img
-        src={imageUrl}
-        alt={`${title} cover`}
-        className="w-full h-40 object-cover"
-      />
+      <Link to={id ? `/games/${id}` : "#"}>
+        <img
+          src={imageUrl}
+          alt={`${title} cover`}
+          className="w-full h-40 object-cover cursor-pointer"
+        />
+      </Link>
       <div className="p-4 text-white">
-        <h3 className="text-lg font-semibold leading-tight">{title}</h3>
+        <Link to={id ? `/games/${id}` : "#"}>
+          <h3 className="text-lg font-semibold leading-tight hover:underline cursor-pointer">{title}</h3>
+        </Link>
         <p className="text-teal-400 text-sm mt-1">{genre}</p>
         <p className="text-gray-400 text-sm mb-3">{date}</p>
         <div className="flex flex-col gap-2 items-end">
