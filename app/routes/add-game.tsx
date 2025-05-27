@@ -1,10 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import { json, redirect } from "@remix-run/node";
+import { PrismaClient } from "@prisma/client";
 import { useLoaderData } from "@remix-run/react";
-import { useState } from "react";
 import GameForm from "~/components/GameForm";
-import ImageUploader from "~/components/ImageUploader";
 
+// Loader to fetch categories for the form
 export const loader = async () => {
   const prisma = new PrismaClient();
   const categories = await prisma.category.findMany({
@@ -17,14 +16,16 @@ export const loader = async () => {
 
 export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();
-
   const title = formData.get("title");
   const description = formData.get("description");
   const priceStr = formData.get("price");
   const ratingStr = formData.get("rating");
   const releaseDateStr = formData.get("releaseDate");
-  const imageUrl = formData.get("imageUrl");
   const categoryId = formData.get("categoryId");
+  const imageUrl = formData.get("imageUrl");
+
+  // Debug log for form data
+  console.log(Object.fromEntries(formData));
 
   if (
     typeof title !== "string" ||
@@ -36,6 +37,10 @@ export const action = async ({ request }: { request: Request }) => {
     typeof categoryId !== "string"
   ) {
     throw new Response("Invalid form data", { status: 400 });
+  }
+
+  if (!imageUrl) {
+    return json({ error: "Image is required." }, { status: 400 });
   }
 
   const price = parseFloat(priceStr);
@@ -62,20 +67,16 @@ export const action = async ({ request }: { request: Request }) => {
   return redirect("/");
 };
 
+// Default export: the page component
 export default function AddGame() {
   const { categories } = useLoaderData<typeof loader>();
-  const [imageUrl, setImageUrl] = useState("");
-
   return (
     <div className="container mx-auto py-20 px-4">
       <h1 className="font-bold text-5xl text-center mb-10">
         Add <span className="text-cyan-400">Game</span>
       </h1>
       <div className="max-w-2xl mx-auto bg-black p-8 rounded-xl shadow-lg">
-        <div className="mb-6">
-          <ImageUploader onUpload={setImageUrl} />
-        </div>
-        <GameForm categories={categories} imageUrl={imageUrl} />
+        <GameForm categories={categories} />
       </div>
     </div>
   );

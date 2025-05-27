@@ -1,121 +1,231 @@
 import { Form } from "@remix-run/react";
+import { useState, useRef } from "react";
 
-export default function GameForm({
-  categories,
-  imageUrl,
-}: {
-  categories: { id: string; title: string }[];
-  imageUrl: string;
-}) {
+type Category = {
+  id: string;
+  title: string;
+};
+
+interface GameFormProps {
+  categories: Category[];
+}
+
+export default function GameForm({ categories }: GameFormProps) {
+  const [imageUrl, setImageUrl] = useState("");
+  const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Debug: log imageUrl whenever it changes
+  console.log("imageUrl in GameForm:", imageUrl);
+
+  async function handleImageUpload() {
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) {
+      setError("Please select an image to upload.");
+      return;
+    }
+    setError("");
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.imageUrl) {
+        setImageUrl(data.imageUrl);
+        setPreview(data.imageUrl);
+      } else {
+        setError("Upload failed. No image URL returned.");
+      }
+    } catch (err) {
+      setError("Image upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+      setImageUrl(""); // Clear previous uploaded URL until upload is done
+    } else {
+      setPreview(null);
+    }
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (!imageUrl) {
+      e.preventDefault();
+      setError("Please upload an image before submitting.");
+    } else {
+      setError("");
+    }
+  }
+
+  function handleReset() {
+    setImageUrl("");
+    setError("");
+    setPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
   return (
-    <Form method="post" encType="multipart/form-data" className="flex flex-col gap-6">
-      <div>
-        <label htmlFor="title" className="block mb-1 text-gray-300 font-medium">
-          Title
-        </label>
+    <div>
+      <div className="mb-4">
         <input
-          type="text"
-          id="title"
-          name="title"
-          required
-          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          placeholder="Enter Game Title"
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          id="game-image-upload"
         />
-      </div>
-      <div>
-        <label htmlFor="description" className="block mb-1 text-gray-300 font-medium">
-          Description
+        <label htmlFor="game-image-upload">
+          <button
+            type="button"
+            className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white mr-2"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Choose Image
+          </button>
         </label>
-        <textarea
-          id="description"
-          name="description"
-          required
-          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          placeholder="Enter Game Description"
-        />
-      </div>
-      <div>
-        <label htmlFor="price" className="block mb-1 text-gray-300 font-medium">
-          Price
-        </label>
-        <input
-          type="number"
-          id="price"
-          name="price"
-          step="0.01"
-          required
-          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          placeholder="Enter Price"
-        />
-      </div>
-      <div>
-        <label htmlFor="rating" className="block mb-1 text-gray-300 font-medium">
-          Rating
-        </label>
-        <input
-          type="number"
-          id="rating"
-          name="rating"
-          step="0.1"
-          min="0"
-          max="10"
-          required
-          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          placeholder="Enter Rating (0-10)"
-        />
-      </div>
-      <div>
-        <label htmlFor="releaseDate" className="block mb-1 text-gray-300 font-medium">
-          Release Date
-        </label>
-        <input
-          type="date"
-          id="releaseDate"
-          name="releaseDate"
-          required
-          className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-        />
-      </div>
-      <div>
-        <label htmlFor="categoryId" className="block mb-1 text-gray-300 font-medium">
-          Category
-        </label>
-        <select
-          id="categoryId"
-          name="categoryId"
-          required
-          className="w-full rounded bg-black border border-gray-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+        <button
+          type="button"
+          className="px-4 py-2 bg-teal-600 rounded hover:bg-teal-500 text-white"
+          onClick={handleImageUpload}
+          disabled={uploading || !fileInputRef.current?.files?.[0]}
         >
-          <option value="">Please Select</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.title}
-            </option>
-          ))}
-        </select>
+          {uploading ? "Uploading..." : "Upload"}
+        </button>
       </div>
-      {/* Show preview if imageUrl exists */}
-      {imageUrl && (
-        <div className="w-full h-48 bg-black border border-gray-700 rounded flex items-center justify-center overflow-hidden">
-          <img src={imageUrl} alt="Preview" className="object-contain max-h-full max-w-full" />
+      {preview && (
+        <div className="w-full h-48 bg-black border border-gray-700 rounded flex items-center justify-center overflow-hidden mb-4">
+          <img
+            src={preview}
+            alt="Preview"
+            className="object-contain max-h-full max-w-full transition-all duration-300"
+          />
         </div>
       )}
-      {/* Hidden input to submit imageUrl */}
-      <input type="hidden" name="imageUrl" value={imageUrl} />
-      <div className="flex justify-end gap-3 pt-4">
-        <button
-          type="reset"
-          className="px-5 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="px-5 py-2 bg-teal-600 rounded hover:bg-teal-500 text-white"
-        >
-          Submit
-        </button>
-      </div>
-    </Form>
+      <Form
+        method="post"
+        encType="multipart/form-data"
+        onSubmit={handleSubmit}
+        onReset={handleReset}
+        className="flex flex-col gap-6"
+      >
+        {error && <div className="mb-2 text-red-400 text-sm">{error}</div>}
+        <div>
+          <label htmlFor="title" className="block mb-1 text-gray-300 font-medium">
+            Title
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            required
+            className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            placeholder="Enter Game Title"
+          />
+        </div>
+        <div>
+          <label htmlFor="description" className="block mb-1 text-gray-300 font-medium">
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            required
+            className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            placeholder="Enter Game Description"
+          />
+        </div>
+        <div>
+          <label htmlFor="price" className="block mb-1 text-gray-300 font-medium">
+            Price
+          </label>
+          <input
+            type="number"
+            id="price"
+            name="price"
+            step="0.01"
+            required
+            className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            placeholder="Enter Price"
+          />
+        </div>
+        <div>
+          <label htmlFor="rating" className="block mb-1 text-gray-300 font-medium">
+            Rating
+          </label>
+          <input
+            type="number"
+            id="rating"
+            name="rating"
+            step="0.1"
+            min="0"
+            max="10"
+            required
+            className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            placeholder="Enter Rating (0-10)"
+          />
+        </div>
+        <div>
+          <label htmlFor="releaseDate" className="block mb-1 text-gray-300 font-medium">
+            Release Date
+          </label>
+          <input
+            type="date"
+            id="releaseDate"
+            name="releaseDate"
+            required
+            className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          />
+        </div>
+        <div>
+          <label htmlFor="categoryId" className="block mb-1 text-gray-300 font-medium">
+            Category
+          </label>
+          <select
+            id="categoryId"
+            name="categoryId"
+            required
+            className="w-full rounded bg-black border border-gray-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+          >
+            <option value="">Please Select</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.title}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* Hidden input to submit imageUrl */}
+        <input type="hidden" name="imageUrl" value={imageUrl} />
+        <div className="flex justify-end gap-3 pt-4">
+          <button
+            type="reset"
+            className="px-5 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-5 py-2 bg-teal-600 rounded hover:bg-teal-500 text-white"
+            disabled={!imageUrl}
+          >
+            Submit
+          </button>
+        </div>
+      </Form>
+    </div>
   );
 }

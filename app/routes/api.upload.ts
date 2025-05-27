@@ -28,12 +28,12 @@ export async function action({ request }: { request: Request }) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const uploadResult = await new Promise<any>((resolve, reject) => {
+    const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: "gamelog" },
         (error, result) => {
           if (error) reject(error);
-          else resolve(result);
+          else resolve(result as { secure_url: string });
         }
       );
       stream.end(buffer);

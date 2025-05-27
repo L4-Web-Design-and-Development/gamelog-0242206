@@ -6,8 +6,6 @@ import GameCard from "~/components/GameCard";
 // If you have local images, import them here. Otherwise, use a placeholder.
 const defaultImg = "https://via.placeholder.com/300x200?text=No+Image";
 const localImages: Record<string, string> = {
-  // Example: "The Legend of Zelda: Breath of the Wild": zeldaImg,
-  // Add more mappings if you have local images
 };
 
 export const meta: MetaFunction = () => [
@@ -66,41 +64,37 @@ export default function Index() {
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {games.map((game) => {
                 // Prefer uploaded image, then local, then default
-                console.log("Game imageUrl:", game.imageUrl);
                 const imageUrl =
-                game.imageUrl || localImages[game.title] || defaultImg;
+                  game.imageUrl || localImages[game.title] || defaultImg;
 
                 return (
-                  <GameCard
+                  <Form
                     key={game.id}
-                    imageUrl={imageUrl}
-                    title={game.title}
-                    genre={game.category?.title || "Uncategorized"}
-                    date={new Date(game.releaseDate).toLocaleDateString()}
-                    onView={() => console.log("View", game.id)}
-                    deleteForm={
-                      <Form
-                        method="post"
-                        onSubmit={(e) => {
-                          if (
-                            !confirm(
-                              `Are you sure you want to delete "${game.title}"?`
-                            )
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
-                      >
-                        <input type="hidden" name="gameId" value={game.id} />
-                        <button
-                          type="submit"
-                          className="w-24 border border-red-400 text-red-400 rounded px-4 py-1 text-xs hover:bg-red-900 transition"
-                        >
-                          Delete
-                        </button>
-                      </Form>
-                    }
-                  />
+                    method="post"
+                    onSubmit={(e) => {
+                      if (
+                        !confirm(
+                          `Are you sure you want to delete "${game.title}"?`
+                        )
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
+                    <GameCard
+                      imageUrl={imageUrl}
+                      title={game.title}
+                      genre={game.category?.title || "Uncategorized"}
+                      date={new Date(game.releaseDate).toLocaleDateString()}
+                      onView={() => console.log("View", game.id)}
+                      onDelete={() => {
+                        // Find the closest form and submit it
+                        const form = document.activeElement?.closest("form");
+                        if (form) (form as HTMLFormElement).requestSubmit();
+                      }}
+                    />
+                    <input type="hidden" name="gameId" value={game.id} />
+                  </Form>
                 );
               })}
             </div>
