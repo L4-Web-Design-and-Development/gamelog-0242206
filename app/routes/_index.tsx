@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { json, redirect, type ActionFunction, type MetaFunction } from "@remix-run/node";
 import { useLoaderData, Form, Link } from "@remix-run/react";
 import GameCard from "~/components/GameCard";
+import { getUserId } from "../utils/session.server";
 
 const defaultImg = "https://via.placeholder.com/300x200?text=No+Image";
 const localImages: Record<string, string> = {};
@@ -13,8 +14,12 @@ export const meta: MetaFunction = () => [
 
 const prisma = new PrismaClient();
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
+  const userId = await getUserId(request);
+  if (!userId) return json({ games: [] });
+  const prisma = new PrismaClient();
   const games = await prisma.game.findMany({
+    where: { userId },
     select: {
       id: true,
       title: true,
@@ -27,6 +32,7 @@ export async function loader() {
       },
     },
   });
+  await prisma.$disconnect();
   return json({ games });
 }
 

@@ -2,6 +2,7 @@ import { json, redirect } from "@remix-run/node";
 import { PrismaClient } from "@prisma/client";
 import { useLoaderData } from "@remix-run/react";
 import GameForm from "~/components/GameForm";
+import { getUserId } from "../utils/session.server";
 
 // Loader to fetch categories for the form
 export const loader = async () => {
@@ -47,6 +48,10 @@ export const action = async ({ request }: { request: Request }) => {
   const rating = parseFloat(ratingStr);
   const releaseDate = new Date(releaseDateStr);
 
+  // Get the logged-in user's ID
+  const userId = await getUserId(request);
+  if (!userId) throw new Response("Unauthorized", { status: 401 });
+
   const prisma = new PrismaClient();
   try {
     await prisma.game.create({
@@ -58,6 +63,7 @@ export const action = async ({ request }: { request: Request }) => {
         releaseDate,
         imageUrl,
         categoryId,
+        userId,
       },
     });
   } finally {

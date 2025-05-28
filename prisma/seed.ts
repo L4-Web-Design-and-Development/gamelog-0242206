@@ -1,9 +1,21 @@
 import { imageUrl } from "@cloudinary/url-gen/qualifiers/source";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function seed() {
+  // Create or find the user with a hashed password
+  const hashedPassword = await bcrypt.hash("testpassword", 10);
+  const user = await prisma.user.upsert({
+    where: { email: "rhyssaunders06@gmail.com" },
+    update: {},
+    create: {
+      email: "rhyssaunders06@gmail.com",
+      password: hashedPassword,
+    },
+  });
+
   const games = [
     {
       title: "The Legend of Zelda: Breath of the Wild",
@@ -94,7 +106,7 @@ async function seed() {
   ];
 
   for (const game of games) {
-    await prisma.game.create({ data: game });
+    await prisma.game.create({ data: { ...game, userId: user.id } });
   }
 
   console.log("👾 Games created successfully");
@@ -181,3 +193,5 @@ seed()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+

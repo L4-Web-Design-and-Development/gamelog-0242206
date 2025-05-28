@@ -44,7 +44,11 @@ export default function GameCard({
           {onDelete && (
             <button
               type="button"
-              onClick={onDelete}
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete();
+              }}
               className="w-24 border border-red-400 text-red-400 rounded px-4 py-1 text-xs hover:bg-red-900 transition"
             >
               Delete

@@ -65,6 +65,10 @@ export default function Login() {
           <p className="text-red-400 text-sm mt-2">{actionData.error}</p>
         )}
       </Form>
+      <p className="mt-4 text-sm text-gray-400">
+        Don't have an account?{' '}
+        <a href="/signup" className="text-teal-400 hover:underline">Sign up</a>
+      </p>
     </div>
   );
 }
