@@ -9,6 +9,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     where: { id: params.id },
     include: { category: true },
   });
+  await prisma.$disconnect();
   if (!game) throw new Response("Not found", { status: 404 });
   return json({ game });
 }
@@ -17,25 +18,20 @@ export default function GameDetails() {
   const { game } = useLoaderData<typeof loader>();
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-      {/* Banner Section */}
-      <div className="relative w-full h-96 bg-gray-900 flex items-center justify-center">
+      <div className="relative w-full h-[28rem] flex items-end">
         <img
-          src={game.imageUrl || "https://via.placeholder.com/800x320?text=No+Image"}
+          src={game.imageUrl || "https://via.placeholder.com/1200x500?text=No+Image"}
           alt={game.title}
-          className="absolute inset-0 w-full h-full object-cover opacity-60"
+          className="absolute inset-0 w-full h-full object-cover opacity-70"
         />
-        <div className="relative z-10 flex flex-col items-start max-w-3xl w-full px-8">
-          <h1 className="text-4xl font-bold mb-2">{game.title}</h1>
-          <p className="text-teal-400 text-lg mb-2">{game.category?.title}</p>
-          <p className="text-gray-300 mb-2">
+        <div className="relative z-10 p-10 bg-gradient-to-t from-gray-950/90 to-transparent w-full">
+          <h1 className="text-5xl font-extrabold mb-2">{game.title}</h1>
+          <p className="text-teal-400 text-lg mb-1">{game.category?.title}</p>
+          <p className="text-gray-300 mb-4">
             Released: {new Date(game.releaseDate).toLocaleDateString()}
           </p>
+          <p className="text-xl max-w-2xl">{game.description || "No description available."}</p>
         </div>
-      </div>
-      {/* Description Section */}
-      <div className="max-w-3xl mx-auto mt-8 px-8">
-        <h2 className="text-2xl font-semibold mb-4">Game Overview</h2>
-        <p className="text-gray-200">{game.description || "No description available."}</p>
       </div>
     </div>
   );

@@ -1,12 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { json, redirect, type ActionFunction, type MetaFunction } from "@remix-run/node";
-import { useLoaderData, Form } from "@remix-run/react";
+import { useLoaderData, Form, Link } from "@remix-run/react";
 import GameCard from "~/components/GameCard";
 
-// If you have local images, import them here. Otherwise, use a placeholder.
 const defaultImg = "https://via.placeholder.com/300x200?text=No+Image";
-const localImages: Record<string, string> = {
-};
+const localImages: Record<string, string> = {};
 
 export const meta: MetaFunction = () => [
   { title: "GameLog" },
@@ -63,7 +61,6 @@ export default function Index() {
           {games.length > 0 ? (
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {games.map((game) => {
-                // Prefer uploaded image, then local, then default
                 const imageUrl =
                   game.imageUrl || localImages[game.title] || defaultImg;
 
@@ -73,26 +70,26 @@ export default function Index() {
                     method="post"
                     onSubmit={(e) => {
                       if (
-                        !confirm(
-                          `Are you sure you want to delete "${game.title}"?`
-                        )
+                        !confirm(`Are you sure you want to delete "${game.title}"?`)
                       ) {
                         e.preventDefault();
                       }
                     }}
                   >
-                    <GameCard
-                      imageUrl={imageUrl}
-                      title={game.title}
-                      genre={game.category?.title || "Uncategorized"}
-                      date={new Date(game.releaseDate).toLocaleDateString()}
-                      id={game.id}
-                      onDelete={() => {
-                        // Find the closest form and submit it
-                        const form = document.activeElement?.closest("form");
-                        if (form) (form as HTMLFormElement).requestSubmit();
-                      }}
-                    />
+                    {/* Card is clickable using Link */}
+                    <Link to={`/games/${game.id}`} className="block hover:opacity-90 transition">
+                      <GameCard
+                        imageUrl={imageUrl}
+                        title={game.title}
+                        genre={game.category?.title || "Uncategorized"}
+                        date={new Date(game.releaseDate).toLocaleDateString()}
+                        id={game.id}
+                        onDelete={() => {
+                          const form = document.activeElement?.closest("form");
+                          if (form) (form as HTMLFormElement).requestSubmit();
+                        }}
+                      />
+                    </Link>
                     <input type="hidden" name="gameId" value={game.id} />
                   </Form>
                 );
