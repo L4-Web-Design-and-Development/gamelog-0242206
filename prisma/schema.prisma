@@ -43,4 +43,5 @@ model User {
   games            Game[]
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
+  profilePicUrl    String?
 }
