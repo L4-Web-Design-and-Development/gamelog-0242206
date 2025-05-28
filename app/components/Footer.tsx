@@ -6,7 +6,7 @@ import twitterIcon from "~/assets/svg/twitter.svg";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#071212] text-gray-400 text-sm rounded-b-lg">
+    <footer className="bg-gray-950 text-gray-400 text-sm rounded-b-lg">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-start py-8 px-6">
         {/* Left: Logo and Social Icons */}
         <div className="flex flex-col items-start gap-4 mb-8 md:mb-0">
@@ -14,15 +14,15 @@ export default function Footer() {
             <img src={siteLogo} alt="GameLog Logo" className="h-10 w-auto" />
           </Link>
           <div className="flex items-center gap-4">
-            <a href="#" aria-label="Facebook">
+            <button type="button" aria-label="Facebook">
               <img src={facebookIcon} alt="Facebook" className="h-5 w-5" />
-            </a>
-            <a href="#" aria-label="Instagram">
+            </button>
+            <button type="button" aria-label="Instagram">
               <img src={instagramIcon} alt="Instagram" className="h-5 w-5" />
-            </a>
-            <a href="#" aria-label="X">
+            </button>
+            <button type="button" aria-label="X">
               <img src={twitterIcon} alt="X" className="h-5 w-5" />
-            </a>
+            </button>
           </div>
         </div>
 
@@ -50,9 +50,9 @@ export default function Footer() {
           <div>
             <div className="font-semibold text-white mb-2">Follow Us</div>
             <ul className="space-y-1">
-              <li><a href="#">Facebook</a></li>
-              <li><a href="#">Twitter</a></li>
-              <li><a href="#">Instagram</a></li>
+              <li><button type="button">Facebook</button></li>
+              <li><button type="button">Twitter</button></li>
+              <li><button type="button">Instagram</button></li>
             </ul>
           </div>
         </div>

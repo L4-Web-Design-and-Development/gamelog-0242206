@@ -11,5 +11,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Logout() {
-  return null;
+  return (
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* ...existing code... */}
+    </div>
+  );
 }

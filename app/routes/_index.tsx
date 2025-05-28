@@ -50,7 +50,7 @@ export default function Index() {
   const { games } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-950 text-gray-50">
+    <div className="min-h-screen bg-gray-950 text-white">
       <div className="flex-1">
         <div className="container mx-auto py-8 px-6">
           <div className="flex justify-between items-center mb-6">

@@ -77,12 +77,14 @@ export const action = async ({ request }: { request: Request }) => {
 export default function AddGame() {
   const { categories } = useLoaderData<typeof loader>();
   return (
-    <div className="container mx-auto py-20 px-4">
-      <h1 className="font-bold text-5xl text-center mb-10">
-        Add <span className="text-cyan-400">Game</span>
-      </h1>
-      <div className="max-w-2xl mx-auto bg-black p-8 rounded-xl shadow-lg">
-        <GameForm categories={categories} />
+    <div className="min-h-screen bg-gray-950 text-white">
+      <div className="container mx-auto py-20 px-4">
+        <h1 className="font-bold text-5xl text-center mb-10">
+          Add <span className="text-cyan-400">Game</span>
+        </h1>
+        <div className="max-w-2xl mx-auto bg-black p-8 rounded-xl shadow-lg">
+          <GameForm categories={categories} />
+        </div>
       </div>
     </div>
   );

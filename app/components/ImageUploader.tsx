@@ -22,30 +22,32 @@ export default function ImageUploader({ onUpload }: ImageUploaderProps) {
   }, [fetcher.data?.imageUrl, onUpload]);
 
   return (
-    <fetcher.Form
-      ref={formRef}
-      method="post"
-      action="/api/upload"
-      encType="multipart/form-data"
-      onSubmit={e => e.preventDefault()} // Prevent default form submit
-      style={{ display: "inline" }}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        name="image"
-        accept="image/*"
-        onChange={() => {
-          if (inputRef.current?.files?.length && formRef.current) {
-            fetcher.submit(formRef.current, {
-              method: "post",
-              encType: "multipart/form-data",
-            });
-          }
-        }}
-      />
-      {fetcher.state === "submitting" && <p>Uploading...</p>}
-      {fetcher.data?.error && <p className="text-red-400">{fetcher.data.error}</p>}
-    </fetcher.Form>
+    <div className="bg-gray-950 text-white p-2 rounded">
+      <fetcher.Form
+        ref={formRef}
+        method="post"
+        action="/api/upload"
+        encType="multipart/form-data"
+        onSubmit={e => e.preventDefault()} // Prevent default form submit
+        style={{ display: "inline" }}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          name="image"
+          accept="image/*"
+          onChange={() => {
+            if (inputRef.current?.files?.length && formRef.current) {
+              fetcher.submit(formRef.current, {
+                method: "post",
+                encType: "multipart/form-data",
+              });
+            }
+          }}
+        />
+        {fetcher.state === "submitting" && <p>Uploading...</p>}
+        {fetcher.data?.error && <p className="text-red-400">{fetcher.data.error}</p>}
+      </fetcher.Form>
+    </div>
   );
 }

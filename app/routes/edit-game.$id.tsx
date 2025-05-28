@@ -68,13 +68,21 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 export default function EditGame() {
   const { game, categories } = useLoaderData<typeof loader>();
   return (
-    <div className="container mx-auto py-20 px-4">
-      <h1 className="font-bold text-5xl text-center mb-10">
-        Edit <span className="text-cyan-400">Game</span>
-      </h1>
-      <div className="max-w-2xl mx-auto bg-black p-8 rounded-xl shadow-lg">
-        <GameForm categories={categories} initialGame={game} />
+    <div className="min-h-screen bg-gray-950 text-white">
+      <div className="container mx-auto py-20 px-4">
+        <h1 className="font-bold text-5xl text-center mb-10">
+          Edit <span className="text-cyan-400">Game</span>
+        </h1>
+        <div className="max-w-2xl mx-auto bg-black p-8 rounded-xl shadow-lg">
+          <GameForm categories={categories} initialGame={{...game, imageUrl: game.imageUrl || '', categoryId: game.categoryId || ''}} />
+        </div>
       </div>
     </div>
   );
+}
+
+// In GameFormProps, change imageUrl type to string | null
+interface GameFormProps {
+  categories: Category[];
+  initialGame?: Game & { imageUrl: string | null };
 }

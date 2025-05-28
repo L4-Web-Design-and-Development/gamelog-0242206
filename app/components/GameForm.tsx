@@ -117,7 +117,7 @@ export default function GameForm({ categories, initialGame }: GameFormProps) {
   }
 
   return (
-    <div>
+    <div className="bg-gray-950 text-white p-6 rounded-2xl">
       <div className="mb-4">
         <input
           type="file"

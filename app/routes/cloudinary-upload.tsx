@@ -51,31 +51,32 @@ import {
     const uploadedUrl = urlParams.get("uploadedUrl");
   
     return (
-      <div className="max-w-md mx-auto p-6">
-        <h2 className="text-xl font-semibold mb-4">Upload Game Image</h2>
-        <Form method="post" encType="multipart/form-data">
-          <input type="file" name="image" accept="image/*" required />
-          <button
-            type="submit"
-            disabled={navigation.state === "submitting"}
-            className="mt-4 px-4 py-2 bg-teal-600 text-white rounded"
-          >
-            {navigation.state === "submitting" ? "Uploading..." : "Upload"}
-          </button>
-        </Form>
+      <div className="min-h-screen bg-gray-950 text-white">
+        <div className="max-w-md mx-auto p-6">
+          <h2 className="text-xl font-semibold mb-4">Upload Game Image</h2>
+          <Form method="post" encType="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required />
+            <button
+              type="submit"
+              disabled={navigation.state === "submitting"}
+              className="mt-4 px-4 py-2 bg-teal-600 text-white rounded"
+            >
+              {navigation.state === "submitting" ? "Uploading..." : "Upload"}
+            </button>
+          </Form>
   
-        {actionData?.error && (
-          <p className="text-red-500 mt-2">{actionData.error}</p>
-        )}
+          {actionData?.error && (
+            <p className="text-red-500 mt-2">{actionData.error}</p>
+          )}
   
-        {uploadedUrl && (
-          <div className="mt-4">
-            <p>Uploaded Image Preview:</p>
-            <img src={uploadedUrl} alt="Uploaded" className="mt-2 rounded max-w-full" />
-            <p className="mt-2 break-all">{uploadedUrl}</p>
-          </div>
-        )}
+          {uploadedUrl && (
+            <div className="mt-4">
+              <p>Uploaded Image Preview:</p>
+              <img src={uploadedUrl} alt="Uploaded" className="mt-2 rounded max-w-full" />
+              <p className="mt-2 break-all">{uploadedUrl}</p>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
-  
