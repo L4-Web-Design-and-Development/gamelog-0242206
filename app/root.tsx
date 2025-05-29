@@ -13,6 +13,7 @@ import Navbar from "./components/NavBar";
 import Footer from "./components/Footer";
 import { getUserSession } from "./utils/session.server";
 import { PrismaClient } from "@prisma/client";
+import NotFound from "./components/NotFound";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -55,5 +56,25 @@ export default function App() {
         </div>
       </body>
     </html>
+  );
+}
+
+export function ErrorBoundary({ error }: { error?: Error }) {
+  // If no error or error is not an object, show NotFound
+  if (!error || typeof error !== "object") {
+    return <NotFound />;
+  }
+  // Show 404 page for not found errors, else generic error
+  if (error.message && error.message.match(/not found|404|No route matches|No routes matched/i)) {
+    return <NotFound />;
+  }
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-950 text-white">
+      <div className="bg-gray-900 p-8 rounded shadow-md w-96 text-center border border-red-700">
+        <h1 className="text-4xl font-bold mb-4 text-red-400">Something went wrong</h1>
+        <p className="mb-6 text-gray-300">{error.message || "Unknown error"}</p>
+        <a href="/" className="inline-block px-6 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded font-semibold transition">Go Home</a>
+      </div>
+    </div>
   );
 }

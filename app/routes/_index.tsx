@@ -1,8 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { json, redirect, type ActionFunction, type MetaFunction } from "@remix-run/node";
+import { json, redirect, type ActionFunction, type MetaFunction, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, Form, Link } from "@remix-run/react";
 import GameCard from "~/components/GameCard";
 import { getUserId } from "../utils/session.server";
+import Unauthorized from "../components/Unauthorized";
 
 const defaultImg = "https://via.placeholder.com/300x200?text=No+Image";
 const localImages: Record<string, string> = {};
@@ -50,6 +51,11 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
   const { games } = useLoaderData<typeof loader>();
+
+  // If games is undefined, user is not authorized (loader returned 401/redirect)
+  if (!games) {
+    return <Unauthorized message="You must be logged in to view your games." />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
