@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getUserId(request);
-  if (!userId) return json({ games: [] });
+  if (!userId) return redirect("/login"); // Redirect unauthenticated users to login
   const prisma = new PrismaClient();
   const games = await prisma.game.findMany({
     where: { userId },
@@ -37,6 +37,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export const action: ActionFunction = async ({ request }) => {
+  const userId = await getUserId(request);
+  if (!userId) return redirect("/login"); // Prevent unauthenticated actions
   const formData = await request.formData();
   const gameId = formData.get("gameId");
   if (typeof gameId !== "string") {

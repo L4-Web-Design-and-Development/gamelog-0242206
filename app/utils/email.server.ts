@@ -24,3 +24,22 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
 
   await transporter.sendMail(mailOptions);
 }
+
+export async function sendVerificationEmail(to: string, verifyUrl: string) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: `GameLog <${EMAIL_USER}>`,
+    to,
+    subject: 'Verify your GameLog account',
+    html: `<p>Click the link below to verify your email address and activate your account:</p><p><a href="${verifyUrl}">${verifyUrl}</a></p>`
+  };
+
+  await transporter.sendMail(mailOptions);
+}

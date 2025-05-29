@@ -21,6 +21,13 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ error: "Invalid email or password" }, { status: 400 });
   }
 
+  if (!user.isEmailVerified) {
+    return json(
+      { error: "Please verify your email before logging in." },
+      { status: 400 }
+    );
+  }
+
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
     return json({ error: "Invalid email or password" }, { status: 400 });
@@ -41,7 +48,10 @@ export default function Login() {
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-3xl font-bold mb-6">Log In</h1>
-        <Form method="post" className="bg-gray-900 p-8 rounded shadow-md w-80 flex flex-col gap-4">
+        <Form
+          method="post"
+          className="bg-gray-900 p-8 rounded shadow-md w-80 flex flex-col gap-4"
+        >
           <input
             name="email"
             type="email"
@@ -67,8 +77,13 @@ export default function Login() {
           )}
         </Form>
         <p className="mt-4 text-sm text-gray-400">
-          Don&apos;t have an account?{' '}
-          <a href="/signup" className="text-teal-400 hover:underline">Sign up</a>
+          Don&apos;t have an account?{" "}
+          <a
+            href="/signup"
+            className="text-teal-400 hover:underline"
+          >
+            Sign up
+          </a>
         </p>
       </div>
     </div>

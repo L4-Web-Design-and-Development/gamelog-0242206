@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import gameLogo from "~/assets/svg/gamelog-logo.svg";
 
 interface NavBarProps {
-  user?: { email: string } | null;
+  user?: { email: string; username?: string; profilePicUrl?: string } | null;
 }
 
 export default function Navbar({ user }: NavBarProps) {
@@ -44,17 +44,21 @@ export default function Navbar({ user }: NavBarProps) {
           {user ? (
             <div className="relative" ref={dropdownRef}>
               <button
-                className="flex items-center gap-2 bg-teal-600 text-white rounded-full w-10 h-10 justify-center font-bold text-lg focus:outline-none"
+                className="flex items-center gap-2 bg-teal-600 text-white rounded-full w-10 h-10 justify-center font-bold text-lg focus:outline-none overflow-hidden"
                 onClick={() => setOpen((v) => !v)}
                 aria-label="Open profile menu"
               >
-                {user.email.charAt(0).toUpperCase()}
+                {user.profilePicUrl ? (
+                  <img src={user.profilePicUrl} alt="Profile" className="w-10 h-10 object-cover rounded-full" />
+                ) : (
+                  (user.username ? user.username.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase())
+                )}
               </button>
               {open && (
                 <div className="absolute right-0 mt-2 w-72 bg-gray-900 rounded-lg shadow-lg z-50 border border-gray-800 animate-fade-in">
                   <div className="flex flex-col items-start p-4 border-b border-gray-800">
                     <span className="text-lg font-semibold text-white mb-1">
-                      {user.email.split("@")[0]}
+                      {user.username || user.email.split("@")[0]}
                     </span>
                     <span className="text-sm text-gray-400 mb-2">{user.email}</span>
                     <Link to="/profile" className="text-teal-400 hover:underline text-sm">

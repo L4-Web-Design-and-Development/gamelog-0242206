@@ -26,7 +26,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const prisma = new PrismaClient();
     user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { email: true },
+      select: { email: true, username: true, profilePicUrl: true },
     });
     await prisma.$disconnect();
   }
@@ -46,7 +46,7 @@ export default function App() {
       <body>
         <div className="flex flex-col min-h-screen bg-gray-950 text-gray-50">
           <div className="flex-1">
-            <Navbar user={user} />
+            <Navbar user={user ? { ...user, profilePicUrl: user.profilePicUrl ?? undefined, username: user.username ?? undefined } : null} />
             <Outlet />
           </div>
           <Footer />

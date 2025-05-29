@@ -17,3 +17,14 @@ export async function uploadImage(imageData: string) {
     throw new Error("Failed to upload image");
   }
 }
+
+export async function uploadProfilePic(fileBuffer: Buffer) {
+  return new Promise<string>((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream({ folder: "profile_pics" }, (error, result) => {
+        if (error || !result) return reject(error);
+        resolve(result.secure_url);
+      })
+      .end(fileBuffer);
+  });
+}
