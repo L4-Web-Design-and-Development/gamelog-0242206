@@ -24,6 +24,7 @@ export const action = async ({ request }: { request: Request }) => {
   const releaseDateStr = formData.get("releaseDate");
   const categoryId = formData.get("categoryId");
   const imageUrl = formData.get("imageUrl");
+  const hoursPlayedStr = formData.get("hoursPlayed");
 
   // Debug log for form data
   console.log(Object.fromEntries(formData));
@@ -35,7 +36,8 @@ export const action = async ({ request }: { request: Request }) => {
     typeof ratingStr !== "string" ||
     typeof releaseDateStr !== "string" ||
     typeof imageUrl !== "string" ||
-    typeof categoryId !== "string"
+    typeof categoryId !== "string" ||
+    typeof hoursPlayedStr !== "string"
   ) {
     throw new Response("Invalid form data", { status: 400 });
   }
@@ -47,6 +49,7 @@ export const action = async ({ request }: { request: Request }) => {
   const price = parseFloat(priceStr);
   const rating = parseFloat(ratingStr);
   const releaseDate = new Date(releaseDateStr);
+  const hoursPlayed = parseFloat(hoursPlayedStr);
 
   // Get the logged-in user's ID
   const userId = await getUserId(request);
@@ -64,6 +67,7 @@ export const action = async ({ request }: { request: Request }) => {
         imageUrl,
         categoryId,
         userId,
+        hoursPlayed,
       },
     });
   } finally {

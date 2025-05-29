@@ -163,13 +163,13 @@ export default function Profile() {
                 title={game.title}
                 genre={""}
                 date={game.releaseDate ? new Date(game.releaseDate).toLocaleDateString() : ""}
-                // Remove onDelete to hide Edit/Delete buttons in profile
+                showEdit={false}
               />
             ))}
           </div>
           {hasMoreGames && (
             <div className="flex justify-center mt-8">
-              <Link to="/games" className="px-5 py-2 border border-teal-400 text-teal-400 rounded hover:bg-teal-900 transition">
+              <Link to="/all-games" className="px-5 py-2 border border-teal-400 text-teal-400 rounded hover:bg-teal-900 transition">
                 View All Games
               </Link>
             </div>

@@ -25,6 +25,7 @@ model Game {
   userId      String
   user        User       @relation(fields: [userId], references: [id])
   blogPosts   BlogPost[]
+  hoursPlayed Float      @default(0)
 }
 
 model Category {

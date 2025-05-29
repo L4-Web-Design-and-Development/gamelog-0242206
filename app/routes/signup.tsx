@@ -4,9 +4,8 @@ import { Form, useActionData } from "@remix-run/react";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
-import { sendVerificationEmail } from "../utils/email.server";
-import { sessionStorage } from "../utils/session.server";
 import GameLogButton from "../components/GameLogButton";
+import { sendVerificationEmail } from "../utils/email.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const form = await request.formData();
@@ -37,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const emailVerificationToken = uuidv4();
   const emailVerificationTokenExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
 
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email,
       password: hashedPassword,
@@ -58,9 +57,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Signup() {
   const actionData = useActionData<typeof action>();
-  const error = (actionData as any)?.error;
-  const success = (actionData as any)?.success;
-  const message = (actionData as any)?.message;
+  const error = actionData && 'error' in actionData ? actionData.error : undefined;
+  const success = actionData && 'success' in actionData ? actionData.success : undefined;
+  const message = actionData && 'message' in actionData ? actionData.message : undefined;
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="flex flex-col items-center justify-center min-h-screen">

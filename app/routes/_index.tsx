@@ -29,6 +29,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       title: true,
       imageUrl: true,
       releaseDate: true,
+      hoursPlayed: true, // <-- fetch hoursPlayed
       category: { select: { title: true } },
     },
     orderBy: { createdAt: "desc" },
@@ -73,11 +74,13 @@ export default function Index() {
     return allGames[idx];
   }, [allGames]);
 
-  // Example stats (replace with real stats if available)
+  // Calculate total hours played
+  const totalHours = allGames.reduce((sum, g) => (typeof g.hoursPlayed === 'number' ? sum + g.hoursPlayed : sum), 0);
+
+  // Stats: remove Achievements
   const stats = [
     { label: "Games Logged", value: allGames.length },
-    { label: "Total Hours", value: 0 },
-    { label: "Achievements", value: 0 },
+    { label: "Total Hours", value: totalHours },
   ];
 
   // If games is undefined, user is not authorized (loader returned 401/redirect)
@@ -107,24 +110,27 @@ export default function Index() {
         {/* Game of the Week + Recent Games Section */}
         <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Recent Games (2x2 grid, now on the left) */}
-          <div className="col-span-2 grid grid-cols-2 gap-4 order-2 md:order-1">
-            {games.slice(0, 4).map((game) => (
-              <Link key={game.id} to={`/games/${game.id}`} className="block hover:opacity-90 transition">
-                <GameCard
-                  imageUrl={game.imageUrl || localImages[game.title] || defaultImg}
-                  title={game.title}
-                  genre={game.category?.title || "Uncategorized"}
-                  date={new Date(game.releaseDate).toLocaleDateString()}
-                  id={game.id}
-                />
-              </Link>
-            ))}
-          </div>
-          {/* See All button under the grid */}
-          <div className="col-span-2 flex justify-center mt-4 order-3 md:order-3">
-            <GameLogButton as="a" href="/all-games" variant="outline" size="md">
-              See All
-            </GameLogButton>
+          <div className="col-span-2 flex flex-col items-center order-2 md:order-1">
+            <div className="grid grid-cols-2 gap-4 w-full">
+              {games.slice(0, 4).map((game) => (
+                <Link key={game.id} to={`/games/${game.id}`} className="block hover:opacity-90 transition">
+                  <GameCard
+                    imageUrl={game.imageUrl || localImages[game.title] || defaultImg}
+                    title={game.title}
+                    genre={game.category?.title || "Uncategorized"}
+                    date={new Date(game.releaseDate).toLocaleDateString()}
+                    id={game.id}
+                    showEdit={false}
+                  />
+                </Link>
+              ))}
+              {/* See All button centered under the games grid */}
+              <div className="col-span-2 flex justify-center mt-4">
+                <GameLogButton as="a" href="/all-games" variant="outline" size="md">
+                  See All
+                </GameLogButton>
+              </div>
+            </div>
           </div>
           {/* Game of the Week (now on the right) */}
           {gameOfTheWeek && (

@@ -20,7 +20,7 @@ type Game = {
 
 interface GameFormProps {
   categories: Category[];
-  initialGame?: Game;
+  initialGame?: Game & { hoursPlayed?: number };
 }
 
 export default function GameForm({ categories, initialGame }: GameFormProps) {
@@ -39,6 +39,7 @@ export default function GameForm({ categories, initialGame }: GameFormProps) {
     initialGame?.releaseDate ? initialGame.releaseDate.slice(0, 10) : ""
   );
   const [categoryId, setCategoryId] = useState(initialGame?.categoryId || "");
+  const [hoursPlayed, setHoursPlayed] = useState(initialGame?.hoursPlayed?.toString() || "");
 
   // If initialGame changes (shouldn't, but for safety)
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function GameForm({ categories, initialGame }: GameFormProps) {
       setRating(initialGame.rating?.toString() || "");
       setReleaseDate(initialGame.releaseDate ? initialGame.releaseDate.slice(0, 10) : "");
       setCategoryId(initialGame.categoryId || "");
+      setHoursPlayed(initialGame.hoursPlayed?.toString() || "");
     }
   }, [initialGame]);
 
@@ -115,6 +117,7 @@ export default function GameForm({ categories, initialGame }: GameFormProps) {
     setRating(initialGame?.rating?.toString() || "");
     setReleaseDate(initialGame?.releaseDate ? initialGame.releaseDate.slice(0, 10) : "");
     setCategoryId(initialGame?.categoryId || "");
+    setHoursPlayed(initialGame?.hoursPlayed?.toString() || "");
   }
 
   return (
@@ -227,6 +230,22 @@ export default function GameForm({ categories, initialGame }: GameFormProps) {
             onChange={e => setRating(e.target.value)}
             className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="Enter Rating (0-10)"
+          />
+        </div>
+        <div>
+          <label htmlFor="hoursPlayed" className="block mb-1 text-gray-300 font-medium">
+            Total Hours Played
+          </label>
+          <input
+            type="number"
+            id="hoursPlayed"
+            name="hoursPlayed"
+            min="0"
+            step="0.1"
+            value={hoursPlayed}
+            onChange={e => setHoursPlayed(e.target.value)}
+            className="w-full p-3 bg-black rounded-md border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            placeholder="Enter total hours played"
           />
         </div>
         <div>
