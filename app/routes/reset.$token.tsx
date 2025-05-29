@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { useState } from "react";
+import GameLogButton from "../components/GameLogButton";
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { token } = params;
@@ -56,7 +57,9 @@ export default function ResetPassword() {
             Show password
           </label>
           {actionData?.error && <p className="text-red-400 mb-2">{actionData.error}</p>}
-          <button type="submit" className="w-full bg-teal-600 hover:bg-teal-500 rounded py-2 font-semibold transition">Reset Password</button>
+          <GameLogButton type="submit" className="w-full" variant="primary" size="md">
+            Reset Password
+          </GameLogButton>
         </Form>
       </div>
     </div>

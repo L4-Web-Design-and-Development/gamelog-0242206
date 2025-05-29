@@ -44,14 +44,21 @@ export default function Navbar({ user }: NavBarProps) {
           {user ? (
             <div className="relative" ref={dropdownRef}>
               <button
-                className="flex items-center gap-2 bg-teal-600 text-white rounded-full w-10 h-10 justify-center font-bold text-lg focus:outline-none overflow-hidden"
+                className="flex items-center gap-2 bg-teal-600 text-white rounded-full w-10 h-10 justify-center font-bold text-lg focus:outline-none overflow-hidden group transition-transform duration-200"
                 onClick={() => setOpen((v) => !v)}
                 aria-label="Open profile menu"
               >
                 {user.profilePicUrl ? (
-                  <img src={user.profilePicUrl} alt="Profile" className="w-10 h-10 object-cover rounded-full" />
+                  <img
+                    src={user.profilePicUrl}
+                    alt="Profile"
+                    className="w-10 h-10 object-cover rounded-full transition-transform duration-200 group-hover:scale-110 group-focus:scale-110 shadow-lg"
+                    style={{ boxShadow: '0 2px 12px 0 rgba(0, 255, 255, 0.15)' }}
+                  />
                 ) : (
-                  (user.username ? user.username.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase())
+                  <span className="transition-transform duration-200 group-hover:scale-110 group-focus:scale-110">
+                    {user.username ? user.username.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                  </span>
                 )}
               </button>
               {open && (

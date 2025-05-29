@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react";
 import siteLogo from "~/assets/svg/gamelog-logo.svg";
+import GameLogButton from "./GameLogButton";
 
 export default function Unauthorized({ message = "You must be logged in to view this page." }: { message?: string }) {
   return (
@@ -14,6 +15,9 @@ export default function Unauthorized({ message = "You must be logged in to view 
         >
           Log In
         </Link>
+        <GameLogButton as="a" href="/" variant="primary" size="md" className="mt-2">
+          Go Home
+        </GameLogButton>
       </div>
     </div>
   );

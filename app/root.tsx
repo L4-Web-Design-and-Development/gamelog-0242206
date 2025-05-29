@@ -14,6 +14,7 @@ import Footer from "./components/Footer";
 import { getUserSession } from "./utils/session.server";
 import { PrismaClient } from "@prisma/client";
 import NotFound from "./components/NotFound";
+import GameLogButton from "./components/GameLogButton";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -73,7 +74,9 @@ export function ErrorBoundary({ error }: { error?: Error }) {
       <div className="bg-gray-900 p-8 rounded shadow-md w-96 text-center border border-red-700">
         <h1 className="text-4xl font-bold mb-4 text-red-400">Something went wrong</h1>
         <p className="mb-6 text-gray-300">{error.message || "Unknown error"}</p>
-        <a href="/" className="inline-block px-6 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded font-semibold transition">Go Home</a>
+        <GameLogButton as="a" href="/" variant="primary" size="md" className="mt-2">
+          Go Home
+        </GameLogButton>
       </div>
     </div>
   );

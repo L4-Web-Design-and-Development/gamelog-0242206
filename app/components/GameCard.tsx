@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react";
+import GameLogButton from "./GameLogButton";
 
 interface GameCardProps {
   imageUrl: string;
@@ -18,15 +19,15 @@ export default function GameCard({
   onDelete,
 }: GameCardProps) {
   return (
-    <div className="bg-gray-950 rounded-2xl w-72 overflow-hidden shadow-md flex flex-col">
+    <div className="bg-gray-950 rounded-2xl w-80 overflow-hidden shadow-md flex flex-col">
       <Link to={id ? `/games/${id}` : "#"}>
         <img
           src={imageUrl}
           alt={`${title} cover`}
-          className="w-full h-40 object-cover cursor-pointer"
+          className="w-full h-52 object-cover cursor-pointer"
         />
       </Link>
-      <div className="p-4 text-white">
+      <div className="p-6 text-white">
         <Link to={id ? `/games/${id}` : "#"}>
           <h3 className="text-lg font-semibold leading-tight hover:underline cursor-pointer">{title}</h3>
         </Link>
@@ -34,25 +35,32 @@ export default function GameCard({
         <p className="text-gray-400 text-sm mb-3">{date}</p>
         <div className="flex flex-col gap-2 items-end">
           {id && (
-            <Link
-              to={`/edit-game/${id}`}
-              className="w-24 border border-teal-400 text-teal-400 rounded px-4 py-1 text-xs hover:bg-teal-900 transition text-center"
-            >
-              Edit
+            <Link to={`/edit-game/${id}`} className="w-24">
+              <GameLogButton
+                as="button"
+                variant="outline"
+                size="sm"
+                className="w-full text-center"
+              >
+                Edit
+              </GameLogButton>
             </Link>
           )}
           {onDelete && (
-            <button
+            <GameLogButton
               type="button"
+              variant="danger"
+              size="sm"
+              className="w-24 text-center"
+              style={{ marginTop: '0.5rem' }}
               onClick={e => {
                 e.preventDefault();
                 e.stopPropagation();
                 onDelete();
               }}
-              className="w-24 border border-red-400 text-red-400 rounded px-4 py-1 text-xs hover:bg-red-900 transition"
             >
               Delete
-            </button>
+            </GameLogButton>
           )}
         </div>
       </div>

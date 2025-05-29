@@ -1,5 +1,6 @@
 import { Form } from "@remix-run/react";
 import { useState, useRef, useEffect } from "react";
+import GameLogButton from "./GameLogButton";
 
 type Category = {
   id: string;
@@ -128,22 +129,25 @@ export default function GameForm({ categories, initialGame }: GameFormProps) {
           id="game-image-upload"
         />
         <label htmlFor="game-image-upload">
-          <button
+          <GameLogButton
             type="button"
-            className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white mr-2"
+            variant="secondary"
+            size="sm"
+            className="mr-2"
             onClick={() => fileInputRef.current?.click()}
           >
             Choose Image
-          </button>
+          </GameLogButton>
         </label>
-        <button
+        <GameLogButton
           type="button"
-          className="px-4 py-2 bg-teal-600 rounded hover:bg-teal-500 text-white"
+          variant="primary"
+          size="sm"
           onClick={handleImageUpload}
           disabled={uploading || !fileInputRef.current?.files?.[0]}
         >
           {uploading ? "Uploading..." : "Upload"}
-        </button>
+        </GameLogButton>
       </div>
       {preview && (
         <div className="w-full h-48 bg-black border border-gray-700 rounded flex items-center justify-center overflow-hidden mb-4">
@@ -262,19 +266,24 @@ export default function GameForm({ categories, initialGame }: GameFormProps) {
         {/* Hidden input to submit imageUrl */}
         <input type="hidden" name="imageUrl" value={imageUrl} />
         <div className="flex justify-end gap-3 pt-4">
-          <button
-            type="reset"
-            className="px-5 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white"
+          <GameLogButton
+            type="button"
+            variant="secondary"
+            size="md"
+            className="px-5"
+            onClick={() => window.location.assign("/")}
           >
             Cancel
-          </button>
-          <button
+          </GameLogButton>
+          <GameLogButton
             type="submit"
-            className="px-5 py-2 bg-teal-600 rounded hover:bg-teal-500 text-white"
+            variant="primary"
+            size="md"
+            className="px-5"
             disabled={!imageUrl}
           >
             Submit
-          </button>
+          </GameLogButton>
         </div>
       </Form>
     </div>

@@ -4,6 +4,7 @@ import { Form, useActionData } from "@remix-run/react";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { sessionStorage } from "../utils/session.server";
+import GameLogButton from "../components/GameLogButton";
 
 export async function action({ request }: ActionFunctionArgs) {
   const form = await request.formData();
@@ -66,12 +67,14 @@ export default function Login() {
             required
             className="p-2 rounded bg-gray-800 border border-gray-700 text-white"
           />
-          <button
+          <GameLogButton
             type="submit"
-            className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded"
+            className="w-full"
+            variant="primary"
+            size="md"
           >
             Log In
-          </button>
+          </GameLogButton>
           {actionData?.error && (
             <p className="text-red-400 text-sm mt-2">{actionData.error}</p>
           )}

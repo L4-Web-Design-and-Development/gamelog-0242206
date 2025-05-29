@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import { sendVerificationEmail } from "../utils/email.server";
 import { sessionStorage } from "../utils/session.server";
+import GameLogButton from "../components/GameLogButton";
 
 export async function action({ request }: ActionFunctionArgs) {
   const form = await request.formData();
@@ -86,12 +87,9 @@ export default function Signup() {
             required
             className="p-2 rounded bg-gray-800 border border-gray-700 text-white"
           />
-          <button
-            type="submit"
-            className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded"
-          >
+          <GameLogButton type="submit" className="w-full" variant="primary" size="md">
             Sign Up
-          </button>
+          </GameLogButton>
           {error && (
             <p className="text-red-400 text-sm mt-2">{error}</p>
           )}

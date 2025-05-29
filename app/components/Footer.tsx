@@ -3,6 +3,7 @@ import siteLogo from "~/assets/svg/gamelog-logo.svg";
 import facebookIcon from "~/assets/svg/facebook.svg";
 import instagramIcon from "~/assets/svg/instagram.svg";
 import twitterIcon from "~/assets/svg/twitter.svg";
+import GameLogButton from "./GameLogButton";
 
 export default function Footer() {
   return (
@@ -14,13 +15,13 @@ export default function Footer() {
             <img src={siteLogo} alt="GameLog Logo" className="h-10 w-auto" />
           </Link>
           <div className="flex items-center gap-4">
-            <button type="button" aria-label="Facebook">
+            <button type="button" aria-label="Facebook" className="outline-none">
               <img src={facebookIcon} alt="Facebook" className="h-5 w-5" />
             </button>
-            <button type="button" aria-label="Instagram">
+            <button type="button" aria-label="Instagram" className="outline-none">
               <img src={instagramIcon} alt="Instagram" className="h-5 w-5" />
             </button>
-            <button type="button" aria-label="X">
+            <button type="button" aria-label="X" className="outline-none">
               <img src={twitterIcon} alt="X" className="h-5 w-5" />
             </button>
           </div>
@@ -50,9 +51,9 @@ export default function Footer() {
           <div>
             <div className="font-semibold text-white mb-2">Follow Us</div>
             <ul className="space-y-1">
-              <li><button type="button">Facebook</button></li>
-              <li><button type="button">Twitter</button></li>
-              <li><button type="button">Instagram</button></li>
+              <li><GameLogButton as="a" href="#" variant="outline" size="sm">Facebook</GameLogButton></li>
+              <li><GameLogButton as="a" href="#" variant="outline" size="sm">Twitter</GameLogButton></li>
+              <li><GameLogButton as="a" href="#" variant="outline" size="sm">Instagram</GameLogButton></li>
             </ul>
           </div>
         </div>
