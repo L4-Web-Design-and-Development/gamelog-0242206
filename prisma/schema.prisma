@@ -11,12 +11,56 @@ datasource db {
 }
 
 model Game {
-  id          Int      @id @default(autoincrement())
+  id          String     @id @default(cuid())
   title       String
   description String
   price       Float
   rating      Float
+  imageUrl    String?
   releaseDate DateTime
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  categoryId  String?
+  category    Category?  @relation(fields: [categoryId], references: [id])
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  blogPosts   BlogPost[]
+  hoursPlayed Float      @default(0)
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  games       Game[]
+}
+
+model User {
+  id                           String     @id @default(cuid())
+  email                        String     @unique
+  username                     String?    @unique // Temporarily optional for migration
+  password                     String
+  createdAt                    DateTime   @default(now())
+  games                        Game[]
+  resetToken                   String?    @unique
+  resetTokenExpiry             DateTime?
+  profilePicUrl                String?
+  isEmailVerified              Boolean    @default(false)
+  emailVerificationToken       String?    @unique
+  emailVerificationTokenExpiry DateTime?
+  blogPosts                    BlogPost[]
+}
+
+model BlogPost {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id])
 }
