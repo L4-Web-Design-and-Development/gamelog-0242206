@@ -43,3 +43,22 @@ export async function sendVerificationEmail(to: string, verifyUrl: string) {
 
   await transporter.sendMail(mailOptions);
 }
+
+export async function sendAccountDeletedEmail(to: string) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: `GameLog <${EMAIL_USER}>`,
+    to,
+    subject: 'Your GameLog account has been deleted',
+    html: `<p>Your GameLog account has been successfully deleted. If this was not you, please contact support immediately.</p>`
+  };
+
+  await transporter.sendMail(mailOptions);
+}

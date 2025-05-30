@@ -5,6 +5,7 @@ import GameCard from "../components/GameCard";
 import { getUserId } from "../utils/session.server";
 import Unauthorized from "../components/Unauthorized";
 import GameLogButton from "../components/GameLogButton";
+import React, { useState, useEffect } from "react";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
@@ -22,7 +23,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     orderBy: { createdAt: "desc" },
   });
   await prisma.$disconnect();
-  return json({ games });
+  // Get the deleted flag from the URL
+  const url = new URL(request.url);
+  const deleted = url.searchParams.get("deleted") === "1";
+  return json({ games, deleted });
 };
 
 export const action = async ({ request }: LoaderFunctionArgs) => {
@@ -35,13 +39,14 @@ export const action = async ({ request }: LoaderFunctionArgs) => {
     const prisma = new PrismaClient();
     await prisma.game.delete({ where: { id: gameId, userId } });
     await prisma.$disconnect();
-    return redirect("/all-games");
+    // Pass a success message via query string
+    return redirect("/all-games?deleted=1");
   }
   return null;
 };
 
 export default function AllGames() {
-  const { games } = useLoaderData<typeof loader>();
+  const { games, deleted } = useLoaderData<typeof loader>();
   if (!games) {
     return <Unauthorized message="You must be logged in to view your games." />;
   }
@@ -51,6 +56,11 @@ export default function AllGames() {
         <h1 className="font-bold text-4xl text-center mb-10">
           All <span className="text-cyan-400">Games</span>
         </h1>
+        {deleted && (
+          <div className="mb-6 text-teal-400 text-center font-semibold bg-gray-800 rounded p-3 shadow">
+            Game deleted successfully!
+          </div>
+        )}
         {games.length > 0 ? (
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {games.map((game) => (
@@ -63,6 +73,8 @@ export default function AllGames() {
                     e.preventDefault();
                 }}
               >
+                <input type="hidden" name="gameId" value={game.id} />
+                <input type="hidden" name="intent" value="delete" />
                 <GameCard
                   imageUrl={
                     game.imageUrl ||
@@ -79,17 +91,22 @@ export default function AllGames() {
                     if (form) form.requestSubmit();
                   }}
                 />
-                <input type="hidden" name="gameId" value={game.id} />
-                <input type="hidden" name="intent" value="delete" />
-                {/* Remove separate delete button, handled by GameCard */}
               </Form>
             ))}
           </div>
         ) : (
-          <p className="text-center text-gray-400 mt-16">
-            No games added yet
+          <p className="text-center text-gray-400">
+            You haven't added any games yet. Start by adding a new game!
           </p>
         )}
+        <div className="mt-10 text-center">
+          <a
+            href="/add-game"
+            className="inline-block bg-cyan-500 text-gray-950 font-semibold py-3 px-6 rounded-lg shadow hover:bg-cyan-600 transition-all"
+          >
+            + Add New Game
+          </a>
+        </div>
       </div>
     </div>
   );
